@@ -1,0 +1,26 @@
+Ekosystem STM32
+
+ARM Cortex M
+Architektura Renesas
+STM8
+AVR
+
+STM32  vs NXP  vs TI vs świat
+
+Peryferia
+
+Narzędzia
+	Biblioteki: CMSIS, HAL, StdPeriph
+	IDE: AC6, TrueSTUDIO, Keil
+	Debuggery: Segger, J-Link
+	
+RTOS
+	FreeRTOS
+	Zephyr
+	
+	
+Zajawka:
+Pierwsza prezentacja w nowym roku będzie poświęcona mikrokontrolerom ARM Cortex-M, które przeboje zdobyły rynek oferując 32bitową architekturę w cenie zbliżonej do 8bitowych AVR.
+	
+W trakcie prezentacji opowiem o mikrokontrolerach STM32: jakie są ich możliwości i jakich narzędzi możemy z nimi używać. Pokażę też, jak skonfigurować i uruchomić prosty projekt za pomocą darmowych narzędzi.
+
