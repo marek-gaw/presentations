@@ -17,8 +17,18 @@ exercises : $(EXERCISES)
 print : $(SLIDES) $(PRINTOUTS)
 reveal : $(REVEAL_SLIDES)
 
+# pandoc -t html5 -s --template=template.revealjs.html --standalone --section-divs --variable theme="sky" -o slides.html slides.md
+
 %-slides.html : %-slides.md
-	pandoc -t revealjs -s $^ -o $@ -V revealjs-url=$(REVEAL_DIR) \
+	pandoc -t html5 -s $^ --template=template-revealjs.html \
+		--standalone --section-divs \
+		--variable theme="sky" \
+		-o $@ \
+		-V revealjs-url=$(REVEAL_DIR) \
+		-V slideNumber='true' \
+		-V transition='convex' \
+
+#	pandoc -t revealjs -s $^ -o $@ -V revealjs-url=$(REVEAL_DIR) \
 		-V theme='beige' \
 		-V slideNumber='true' \
 		-V transition='convex' \
