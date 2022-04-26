@@ -1,0 +1,60 @@
+demo_make_series1 
+| take 10
+
+demo_make_series1 
+| count
+
+let min_t = toscalar(demo_make_series1 | summarize min(TimeStamp));
+let max_t = toscalar(demo_make_series1 | summarize max(TimeStamp));
+demo_make_series1
+| make-series num=count() default=0 on TimeStamp in range(min_t, max_t, 1h) by OsVer
+| render timechart 
+
+
+let min_t = toscalar(demo_make_series1 | summarize min(TimeStamp));
+let max_t = toscalar(demo_make_series1 | summarize max(TimeStamp));
+demo_make_series1
+| make-series num=count() default=0 on TimeStamp in range(min_t, max_t, 1h) by OsVer
+| extend ma_num=series_fir(num, repeat(1, 5), true, true)
+| render timechart
+
+
+demo_series2
+| extend series_fit_2lines(y), series_fit_line(y)
+| render linechart with(xcolumn=x)
+
+demo_series3
+| render timechart
+
+demo_series3
+| project (periods, scores) = series_periods_detect(num, 0., 14d/2h, 2) //to detect the periods in the time series
+| mv-expand periods, scores
+| extend days=2h*todouble(periods)/1d
+
+let min_t = datetime(2017-01-05);
+let max_t = datetime(2017-02-03 22:00);
+let dt = 2h;
+demo_make_series2
+| make-series num=avg(num) on TimeStamp from min_t to max_t step dt by sid 
+| where sid == 'TS1'   //  select a single time series for a cleaner visualization
+| extend (anomalies, score, baseline) = series_decompose_anomalies(num, 1.5, -1, 'linefit')
+| render anomalychart with(anomalycolumns=anomalies, title='Web app. traffic of a month, anomalies') //use "| render anomalychart with anomalycolumns=anomalies" to render the anomalies as bold points on the series charts.
+
+let min_t = datetime(2017-01-05);
+let max_t = datetime(2017-02-03 22:00);
+let dt = 2h;
+let horizon=7d;
+demo_make_series2
+| make-series num=avg(num) on TimeStamp from min_t to max_t+horizon step dt by sid 
+| where sid == 'TS1'   //  select a single time series for a cleaner visualization
+| extend forecast = series_decompose_forecast(num, toint(horizon/dt))
+| render timechart with(title='Web app. traffic of a month, forecasting the next week by Time Series Decomposition')
+
+
+let min_t = toscalar(demo_clustering1 | summarize min(PreciseTimeStamp));  
+let max_t = toscalar(demo_clustering1 | summarize max(PreciseTimeStamp));  
+demo_clustering1
+| extend seg = iff(Region == "eau" and ScaleUnit == "su7" and DeploymentId == "b5d1d4df547d4a04ac15885617edba57"
+and ServiceHost == "e7f60c5d-4944-42b3-922a-92e98a8e7dec", "Problem", "Normal")
+| make-series num=count() on PreciseTimeStamp from min_t to max_t step 10m by seg
+| render timechart
